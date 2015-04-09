@@ -12,6 +12,7 @@ BasicGame.Preloader.prototype = {
     //  As this is just a Project Template I've not provided these assets, swap them for your own.
     this.load.image('partyBackground', 'assets/partyLights.jpg');
     this.load.image('lamp', 'assets/lamp.png');
+    this.load.image('yuengling', 'assets/yuengling.png');
 
   },
 

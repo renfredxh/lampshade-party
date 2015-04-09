@@ -1,9 +1,13 @@
 BasicGame.Game = function (game) {
   this.LAMP_VELOCITY = 350;
+  this.LAMP_FAST_FALL_VELOCITY = 1111;
   this.LAMP_JUMP_VELOCITY = 580;
   this.LAMP_ANGULAR_VELOCITY = 2;
   this.MOVE_TIMEOUT = 200;
-  this.LEVEL_COUNT = 4;
+  this.LEVEL_COUNT = 5;
+  this.DRINK_TYPES = [
+    { name: 'yuengling', mass: 0.3, velocity: 200, spin: 100 },
+  ];
 };
 
 BasicGame.Game.prototype = {
@@ -12,6 +16,7 @@ BasicGame.Game.prototype = {
       this.level = -1;
       this.thrownCount = 0;
       this.throwsPerLevel = null;
+      this.rnd.sow(Date.now());
 
       this.background = this.add.tileSprite(0, 0, 1080, 720, 'partyBackground');
       this.background.width = 1080;
@@ -95,11 +100,41 @@ BasicGame.Game.prototype = {
 
     throwDrink: function() {
       var drink = this.drinks.getFirstDead();
-      drink.loadTexture('yuengling');
+      var type = this.rnd.pick(this.DRINK_TYPES);
+      drink.loadTexture(type.name);
       this.physics.p2.enable(drink);
-      drink.reset(0, 100);
-      drink.body.moveRight(200);
-      drink.body.rotateLeft(100);
+      this.rnd.pick([
+        function() {
+          drink.reset(0, 100);
+          drink.body.moveRight(type.velocity);
+        },
+        function() {
+          drink.reset(1080, 100);
+          drink.body.moveLeft(type.velocity);
+        },
+        function() {
+          drink.reset(0, 350);
+          drink.body.moveRight(type.velocity);
+        },
+        function() {
+          drink.reset(1080, 350);
+          drink.body.moveLeft(type.velocity);
+        },
+        function() {
+          drink.reset(270, 0);
+          drink.body.moveDown(type.velocity);
+        },
+        function() {
+          drink.reset(540, 0);
+          drink.body.moveDown(type.velocity);
+        },
+        function() {
+          drink.reset(810, 0);
+          drink.body.moveDown(type.velocity);
+        },
+      ])();
+      drink.body.rotateLeft(this.rnd.pick([200, 100, -100, -200]));
+      drink.body.mass = type.mass;
       this.activeDrinks.push(drink);
       this.thrownCount++;
       if (this.thrownCount >= this.throwsPerLevel && this.level < this.LEVEL_COUNT - 1) {
@@ -109,8 +144,8 @@ BasicGame.Game.prototype = {
 
     levelUp: function() {
       this.level++;
-      var timeBetweenThrows = [3, 1, 0.5, 0.3][this.level];
-      this.throwsPerLevel = [10, 15, 50, 1000][this.level];
+      var timeBetweenThrows = [1.5, 1, 0.5, 0.3, 0.1][this.level];
+      this.throwsPerLevel = [5, 10, 25, 50, 10000][this.level];
       this.time.events.repeat(Phaser.Timer.SECOND * timeBetweenThrows, this.throwsPerLevel, this.throwDrink, this);
       this.thrownCount = 0;
     },
@@ -130,8 +165,7 @@ BasicGame.Game.prototype = {
     },
 
     hitFloor: function(body, shapeA, shapeB) {
-
-      if (shapeB === this.floorBound && 
+      if (shapeB === this.floorBound &&
           (shapeA === this.lamp.leftShade || shapeA === this.lamp.rightShade)) {
         this.resetGame();
       } else if (shapeB === this.floorBound && shapeA === this.lamp.base) {

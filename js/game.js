@@ -77,13 +77,20 @@ BasicGame.Game.prototype = {
       } else if (this.cursors.right.isDown && this.lamp.canMove.right) {
         this.lamp.body.rotateRight(this.LAMP_ANGULAR_VELOCITY);
         this.lamp.body.moveRight(this.LAMP_VELOCITY);
+      } else if (this.cursors.down.isDown && this.lamp.canMove.down) {
+        this.lamp.body.moveDown(this.LAMP_FAST_FALL_VELOCITY);
       } else if (this.cursors.up.isDown) {
         if (this.lamp.jumps > 0 && this.lamp.canMove.up) {
           this.lamp.body.moveUp(this.LAMP_JUMP_VELOCITY);
           this.lamp.jumps--;
         }
       }
-      this.lamp.canMove = { left: this.cursors.left.isUp, right: this.cursors.right.isUp, up: this.cursors.up.isUp };
+      this.lamp.canMove = { 
+        left: this.cursors.left.isUp, 
+        right: this.cursors.right.isUp, 
+        up: this.cursors.up.isUp,
+        down: this.cursors.down.isUp 
+      };
     },
 
     throwDrink: function() {

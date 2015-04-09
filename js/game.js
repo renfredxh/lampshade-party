@@ -28,7 +28,8 @@ BasicGame.Game.prototype = {
        * Lamp
        */
       this.lamp = this.add.sprite(this.world.centerX, 500, 'lamp');
-      this.lamp.canMove = { left: true, right: true };
+      this.lamp.canMove = { left: true, right: true, up: true };
+      this.lamp.jumps = 2;
 
       // Lamp Physics
       this.physics.p2.enable(this.lamp);
@@ -37,7 +38,7 @@ BasicGame.Game.prototype = {
       this.lamp.body.angularDamping = 0.6;
       // Lamp Body
       this.lamp.body.clearShapes();
-      this.lamp.body.addRectangle(52, 20, 0, this.lamp.height/2 - 10);
+      this.lamp.base = this.lamp.body.addRectangle(52, 20, 0, this.lamp.height/2 - 10);
       this.lamp.body.addRectangle(16, 250, 0, 36);
       this.lamp.rightShade = this.lamp.body.addRectangle(78, 45, 10, -125, Phaser.Math.degToRad(70));
       this.lamp.leftShade = this.lamp.body.addRectangle(78, 45, -12, -125, Phaser.Math.degToRad(-70));
@@ -49,8 +50,9 @@ BasicGame.Game.prototype = {
        * Drinks
        */
       this.activeDrinks = [];
-      this.yuenglings = this.add.group();
-      this.yuenglings.createMultiple(5, 'yuengling', 0, false);
+
+      this.drinks = this.add.group();
+      this.drinks .createMultiple(10, '', 0, false);
 
       this.time.events.repeat(Phaser.Timer.SECOND * 3, 100, this.throwDrink, this);
 
@@ -73,17 +75,19 @@ BasicGame.Game.prototype = {
         this.lamp.body.rotateRight(this.LAMP_ANGULAR_VELOCITY);
         this.lamp.body.moveRight(this.LAMP_VELOCITY);
       } else if (this.cursors.up.isDown) {
-        if (this.lamp.body.y >= 0) {
+        if (this.lamp.jumps > 0 && this.lamp.canMove.up) {
           this.lamp.body.moveUp(this.LAMP_JUMP_VELOCITY);
+          this.lamp.jumps--;
         }
       }
-      this.lamp.canMove = { left: this.cursors.left.isUp, right: this.cursors.right.isUp };
+      this.lamp.canMove = { left: this.cursors.left.isUp, right: this.cursors.right.isUp, up: this.cursors.up.isUp };
     },
 
     throwDrink: function() {
-      var drink = this.yuenglings.getFirstDead();
-      drink.reset(0, 100);
+      var drink = this.drinks.getFirstDead();
+      drink.loadTexture('yuengling');
       this.physics.p2.enable(drink);
+      drink.reset(0, 100);
       drink.body.moveRight(200);
       drink.body.rotateLeft(100);
       this.activeDrinks.push(drink);
@@ -108,6 +112,8 @@ BasicGame.Game.prototype = {
       if (shapeB === this.floorBound && 
           (shapeA === this.lamp.leftShade || shapeA === this.lamp.rightShade)) {
         this.resetGame();
+      } else if (shapeB === this.floorBound && shapeA === this.lamp.base) {
+        this.lamp.jumps = 2;
       }
     },
 

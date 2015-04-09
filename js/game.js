@@ -6,7 +6,19 @@ BasicGame.Game = function (game) {
   this.MOVE_TIMEOUT = 200;
   this.LEVEL_COUNT = 5;
   this.DRINK_TYPES = [
+    { name: 'malibu', mass: 3, velocity: 200, spin: 360 },
+    { name: 'everclear', mass: 20, velocity: 151, spin: 20 },
+    { name: 'jackdaniels', mass: 4.5, velocity: 200, spin: 0 },
+    { name: 'woodchuck', mass: 1, velocity: 600, spin: 10 },
+    { name: 'pbr', mass: 0.8, velocity: 150, spin: 10 },
+    { name: 'guinness', mass: 3, velocity: 100, spin: 0 },
+    { name: 'hpnotiq', mass: 0.5, velocity: 20, spin: 900 },
     { name: 'yuengling', mass: 0.3, velocity: 200, spin: 100 },
+    { name: 'fourloko', mass: 0.4, velocity: 400, spin: 1000 },
+    { name: 'somersby', mass: 0.8, velocity: 10, spin: 150 },
+    { name: 'rouge', mass: 1.5, velocity: 300, spin: 300 },
+    { name: 'coorslight', mass: 0.1, velocity: 50, spin: 50 },
+    { name: 'smirnoffice', mass: 0.8, velocity: 300, spin: 30 },
   ];
 };
 
@@ -16,7 +28,7 @@ BasicGame.Game.prototype = {
       this.level = -1;
       this.thrownCount = 0;
       this.throwsPerLevel = null;
-      this.rnd.sow(Date.now());
+      this.rnd.sow([Date.now(), this.time.now]);
 
       this.background = this.add.tileSprite(0, 0, 1080, 720, 'partyBackground');
       this.background.width = 1080;
@@ -133,7 +145,7 @@ BasicGame.Game.prototype = {
           drink.body.moveDown(type.velocity);
         },
       ])();
-      drink.body.rotateLeft(this.rnd.pick([200, 100, -100, -200]));
+      drink.body.rotateLeft(this.rnd.pick([1, -1]) * type.spin);
       drink.body.mass = type.mass;
       this.activeDrinks.push(drink);
       this.thrownCount++;

@@ -3,11 +3,16 @@ BasicGame.Game = function (game) {
   this.LAMP_JUMP_VELOCITY = 580;
   this.LAMP_ANGULAR_VELOCITY = 2;
   this.MOVE_TIMEOUT = 200;
+  this.LEVEL_COUNT = 4;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
+      this.level = -1;
+      this.thrownCount = 0;
+      this.throwsPerLevel = null;
+
       this.background = this.add.tileSprite(0, 0, 1080, 720, 'partyBackground');
       this.background.width = 1080;
 
@@ -52,13 +57,11 @@ BasicGame.Game.prototype = {
       this.activeDrinks = [];
 
       this.drinks = this.add.group();
-      this.drinks .createMultiple(10, '', 0, false);
-
-      this.time.events.repeat(Phaser.Timer.SECOND * 3, 100, this.throwDrink, this);
+      this.drinks .createMultiple(50, '', 0, false);
 
       this.cursors = this.input.keyboard.createCursorKeys();
 
-
+      this.levelUp();
       //this.lampDebug = new Phaser.Physics.P2.BodyDebug(this, this.lamp.body);
     },
 
@@ -91,6 +94,18 @@ BasicGame.Game.prototype = {
       drink.body.moveRight(200);
       drink.body.rotateLeft(100);
       this.activeDrinks.push(drink);
+      this.thrownCount++;
+      if (this.thrownCount >= this.throwsPerLevel && this.level < this.LEVEL_COUNT - 1) {
+        this.levelUp();
+      }
+    },
+
+    levelUp: function() {
+      this.level++;
+      var timeBetweenThrows = [3, 1, 0.5, 0.3][this.level];
+      this.throwsPerLevel = [10, 15, 50, 1000][this.level];
+      this.time.events.repeat(Phaser.Timer.SECOND * timeBetweenThrows, this.throwsPerLevel, this.throwDrink, this);
+      this.thrownCount = 0;
     },
 
     recycle: function() {
@@ -118,7 +133,7 @@ BasicGame.Game.prototype = {
     },
 
     resetGame: function (pointer) {
-        this.state.restart();
+        this.state.restart(true, false);
     }
 
 };

@@ -33,12 +33,19 @@ BasicGame.Preloader.prototype = {
     this.load.audio('clink6', ['sfx/clink6.ogg', 'sfx/clink6.mp3', 'sfx/clink6.wav']);
     this.load.audio('clink7', ['sfx/clink7.ogg', 'sfx/clink7.mp3', 'sfx/clink7.wav']);
     this.load.audio('clink8', ['sfx/clink8.ogg', 'sfx/clink8.mp3', 'sfx/clink8.wav']);
+    this.load.audio('crash', ['sfx/crash.ogg', 'sfx/crash.mp3', 'sfx/crash.wav']);
+    this.load.audio('jump', ['sfx/jump.ogg', 'sfx/jump.mp3', 'sfx/jump.wav']);
+    this.load.audio('jump2', ['sfx/jump2.ogg', 'sfx/jump2.mp3', 'sfx/jump2.wav']);
+    this.load.audio('beat', ['sfx/beat.wav', 'sfx/beat.mp3', 'sfx/beat.ogg']);
   },
 
   create: function () {
   },
 
   update: function () {
+    this.music = this.add.audio('beat', 0.25, true);
+    this.music.loop = true;
+    this.music.play();
     this.state.start('Game');
   }
 

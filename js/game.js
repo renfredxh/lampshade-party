@@ -40,6 +40,11 @@ BasicGame.Game.prototype = {
         this.add.audio('clink7'), this.add.audio('clink8')
       ];
 
+      this.crashSfx = this.add.audio('crash', 0.55);
+      this.crashSfx.allowMultiple = false;
+      this.jumpSfx = this.add.audio('jump', 0.60);
+      this.doubleJumpSfx = this.add.audio('jump2', 0.60);
+
       this.physics.startSystem(Phaser.Physics.P2JS);
       this.physics.p2.gravity.y = 250;
       this.physics.p2.restitution = 0.5;
@@ -110,15 +115,17 @@ BasicGame.Game.prototype = {
         this.lamp.body.moveDown(this.LAMP_FAST_FALL_VELOCITY);
       } else if (this.cursors.up.isDown) {
         if (this.lamp.jumps > 0 && this.lamp.canMove.up) {
+          if (this.lamp.jumps === 2) this.jumpSfx.play();
+          else this.doubleJumpSfx.play();
           this.lamp.body.moveUp(this.LAMP_JUMP_VELOCITY);
           this.lamp.jumps--;
         }
       }
-      this.lamp.canMove = { 
-        left: this.cursors.left.isUp, 
-        right: this.cursors.right.isUp, 
+      this.lamp.canMove = {
+        left: this.cursors.left.isUp,
+        right: this.cursors.right.isUp,
         up: this.cursors.up.isUp,
-        down: this.cursors.down.isUp 
+        down: this.cursors.down.isUp
       };
     },
 
@@ -191,6 +198,7 @@ BasicGame.Game.prototype = {
     hitFloor: function(body, shapeA, shapeB) {
       if (shapeB === this.floorBound &&
           (shapeA === this.lamp.leftShade || shapeA === this.lamp.rightShade)) {
+        this.crashSfx.play(false);
         this.resetGame();
       } else if (shapeB === this.floorBound && shapeA === this.lamp.base) {
         this.lamp.jumps = 2;

@@ -25,6 +25,14 @@ BasicGame.Preloader.prototype = {
     this.load.image('coorslight', 'assets/coors.png');
     this.load.image('smirnoffice', 'assets/smirnoff-ice.png');
     this.load.image('malibu', 'assets/malibu.png');
+    this.load.audio('clink1', ['sfx/clink1.ogg', 'sfx/clink1.mp3', 'sfx/clink1.wav']);
+    this.load.audio('clink2', ['sfx/clink2.ogg', 'sfx/clink2.mp3', 'sfx/clink2.wav']);
+    this.load.audio('clink3', ['sfx/clink3.ogg', 'sfx/clink3.mp3', 'sfx/clink3.wav']);
+    this.load.audio('clink4', ['sfx/clink4.ogg', 'sfx/clink4.mp3', 'sfx/clink4.wav']);
+    this.load.audio('clink5', ['sfx/clink5.ogg', 'sfx/clink5.mp3', 'sfx/clink5.wav']);
+    this.load.audio('clink6', ['sfx/clink6.ogg', 'sfx/clink6.mp3', 'sfx/clink6.wav']);
+    this.load.audio('clink7', ['sfx/clink7.ogg', 'sfx/clink7.mp3', 'sfx/clink7.wav']);
+    this.load.audio('clink8', ['sfx/clink8.ogg', 'sfx/clink8.mp3', 'sfx/clink8.wav']);
   },
 
   create: function () {

@@ -33,6 +33,13 @@ BasicGame.Game.prototype = {
       this.background = this.add.tileSprite(0, 0, 1080, 720, 'partyBackground');
       this.background.width = 1080;
 
+      this.clinkSfx = [
+        this.add.audio('clink1'), this.add.audio('clink2'),
+        this.add.audio('clink3'), this.add.audio('clink4'),
+        this.add.audio('clink5'), this.add.audio('clink6'),
+        this.add.audio('clink7'), this.add.audio('clink8')
+      ];
+
       this.physics.startSystem(Phaser.Physics.P2JS);
       this.physics.p2.gravity.y = 250;
       this.physics.p2.restitution = 0.5;
@@ -85,6 +92,11 @@ BasicGame.Game.prototype = {
     update: function () {
       this.moveLamp();
       this.recycle();
+    },
+
+    playClink: function() {
+      var sound = this.rnd.pick(this.clinkSfx);
+      sound.play();
     },
 
     moveLamp: function() {
@@ -182,6 +194,15 @@ BasicGame.Game.prototype = {
         this.resetGame();
       } else if (shapeB === this.floorBound && shapeA === this.lamp.base) {
         this.lamp.jumps = 2;
+      } else if (shapeB.type === 32){
+        // On collision with a rectangle (drink), play sound effects.
+        if (shapeB.wasHit === undefined || shapeB.wasHit === false) {
+          this.playClink();
+          shapeB.wasHit = true;
+          timer = this.time.create();
+          timer.add(750, function() { shapeB.wasHit = false; }, this);
+          timer.start();
+        }
       }
     },
 
